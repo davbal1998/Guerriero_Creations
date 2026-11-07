@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guerriero Creations</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-fallback: #5a1414;
+    --text-main: #3a3028;
+    --text-light: #7a6b5d;
+    --text-header: #faf0dc;
+    --text-sub: #e8c547;
+    --text-tagline: #f0d9b5;
+    --text-intro: #f5e6d3;
+    --accent: #a68a6d;
+    --accent-gold: #e8c547;
+    --card-bg-red: rgba(45, 10, 10, 0.8); 
+    --img-bg-panna: #d6c5b0; 
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { 
+    font-family: 'Montserrat', sans-serif; 
+    background-color: var(--bg-fallback);
+    color: var(--text-main); 
+    line-height: 1.6; 
+    overflow-x: hidden; 
+    position: relative;
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    background: linear-gradient(180deg,
+        #2d0606 0%,
+        #4a0f0f 20%,
+        #6b1818 45%,
+        #8a2222 70%,
+        #a02c2c 100%);
+    pointer-events: none;
+  }
+  h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: normal; }
+
+  #snow-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    display: block;
+  }
+
+  .snow-pile {
+    position: fixed;
+    bottom: 0;
+    width: 420px;
+    height: 220px;
+    pointer-events: none;
+    z-index: 1;
+    display: none;
+  }
+  body.in-category .snow-pile { display: block; }
+  
+  .snow-pile-left {
+    left: 0;
+    background: 
+      radial-gradient(ellipse 220px 150px at 40px 220px, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 25%, rgba(248,251,255,0.85) 45%, rgba(248,251,255,0) 75%),
+      radial-gradient(ellipse 160px 110px at 180px 220px, rgba(255,255,255,0.95) 0%, rgba(248,251,255,0.7) 40%, rgba(248,251,255,0) 70%),
+      radial-gradient(ellipse 120px 80px at 340px 220px, rgba(255,255,255,0.9) 0%, rgba(248,251,255,0.5) 40%, rgba(248,251,255,0) 70%);
+  }
+  
+  .snow-pile-right {
+    right: 0;
+    background: 
+      radial-gradient(ellipse 220px 150px at 380px 220px, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 25%, rgba(248,251,255,0.85) 45%, rgba(248,251,255,0) 75%),
+      radial-gradient(ellipse 160px 110px at 240px 220px, rgba(255,255,255,0.95) 0%, rgba(248,251,255,0.7) 40%, rgba(248,251,255,0) 70%),
+      radial-gradient(ellipse 120px 80px at 80px 220px, rgba(255,255,255,0.9) 0%, rgba(248,251,255,0.5) 40%, rgba(248,251,255,0) 70%);
+  }
+
+  @media (max-width: 600px) {
+    .snow-pile { width: 260px; height: 150px; }
+    .snow-pile-left {
+      background: 
+        radial-gradient(ellipse 140px 100px at 20px 150px, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 25%, rgba(248,251,255,0.85) 45%, rgba(248,251,255,0) 75%),
+        radial-gradient(ellipse 100px 70px at 130px 150px, rgba(255,255,255,0.95) 0%, rgba(248,251,255,0.7) 40%, rgba(248,251,255,0) 70%);
+    }
+    .snow-pile-right {
+      background: 
+        radial-gradient(ellipse 140px 100px at 240px 150px, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 25%, rgba(248,251,255,0.85) 45%, rgba(248,251,255,0) 75%),
+        radial-gradient(ellipse 100px 70px at 130px 150px, rgba(255,255,255,0.95) 0%, rgba(248,251,255,0.7) 40%, rgba(248,251,255,0) 70%);
+    }
+  }
+
+  .view { position: relative; z-index: 2; }
+
+  header { 
+    text-align: center; 
+    padding: 60px 20px 40px; 
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .logo-container { 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    margin-bottom: 20px; 
+    background: rgba(60, 10, 10, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    border: 1px solid rgba(232, 197, 71, 0.25);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3), inset 0 0 30px rgba(232, 197, 71, 0.05);
+    max-width: 700px; 
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  .header-logo-container {
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 90px; 
+    z-index: 10;
+    transition: z-index 0.1s; 
+  }
+
+  .header-logo-container:hover { z-index: 50; }
+
+  .header-logo-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    border: 1px solid rgba(232, 197, 71, 0.4);
+    display: block;
+    cursor: pointer;
+    transform-origin: left center; 
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .header-logo-container img:hover {
+    transform: scale(1.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(232, 197, 71, 0.6);
+    border-color: rgba(232, 197, 71, 0.9);
+  }
+
+  .header-logo-container-right {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 90px; 
+    z-index: 10;
+    transition: z-index 0.1s; 
+  }
+
+  .header-logo-container-right:hover { z-index: 50; }
+
+  .header-logo-container-right img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    border: 1px solid rgba(232, 197, 71, 0.4);
+    display: block;
+    cursor: pointer;
+    transform-origin: right center; 
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .header-logo-container-right img:hover {
+    transform: scale(1.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(232, 197, 71, 0.6);
+    border-color: rgba(232, 197, 71, 0.9);
+  }
+  
+  .logo-main { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 3.2rem; 
+    font-weight: 700; 
+    color: var(--text-header); 
+    letter-spacing: 3px; 
+    text-transform: uppercase; 
+    line-height: 1; 
+    text-shadow: 0 0 30px rgba(232, 197, 71, 0.3), 0 2px 6px rgba(0,0,0,0.5);
+  }
+  
+  .logo-sub { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 2.6rem; 
+    font-style: italic; 
+    font-weight: 400; 
+    color: var(--text-sub); 
+    letter-spacing: 1px; 
+    margin-top: -5px; 
+    text-shadow: 0 0 20px rgba(232, 197, 71, 0.5), 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .logo-divider { 
+    width: 80px; 
+    height: 1px; 
+    background-color: var(--accent-gold); 
+    margin: 20px 0; 
+    opacity: 0.9;
+    box-shadow: 0 0 10px rgba(232, 197, 71, 0.6);
+  }
+  
+  .tagline { 
+    font-size: 1rem; 
+    color: var(--text-tagline); 
+    font-style: italic; 
+    letter-spacing: 1px; 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    text-align: center;
+    line-height: 1.5;
+  }
+  
+  .tagline strong {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-style: normal;
+    color: #ffffff;
+    display: inline-block;
+    margin-top: 4px;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.5);
+  }
+  
+  .intro { 
+    max-width: 650px; 
+    margin: 0 auto 40px; 
+    text-align: center; 
+    padding: 25px 30px; 
+    font-size: 1rem; 
+    color: var(--text-intro); 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    background: rgba(60, 10, 10, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(232, 197, 71, 0.2);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    width: 90%;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  @media (max-width: 768px) {
+    .logo-container { padding: 30px 15px; }
+    
+    .header-logo-container,
+    .header-logo-container-right {
+      position: relative;
+      left: auto;
+      right: auto;
+      top: auto;
+      transform: none;
+      margin-bottom: 15px;
+      width: 80px;
+    }
+    
+    .header-logo-container img,
+    .header-logo-container-right img {
+      transform-origin: center center;
+    }
+    
+    .header-logo-container img:hover,
+    .header-logo-container-right img:hover {
+      transform: scale(1.1);
+    }
+    
+    .logo-main { font-size: 2.2rem; letter-spacing: 2px; }
+    .logo-sub { font-size: 1.8rem; }
+    .intro { padding: 20px 15px; margin-bottom: 25px; }
+    .tagline { font-size: 0.95rem; }
+    .tagline strong { font-size: 1.05rem; }
+
+    .categories-grid { 
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+      gap: 15px;
+      padding: 10px;
+    }
+    
+    .category-card { border-radius: 10px; }
+    .category-cover { border-top-left-radius: 10px; border-top-right-radius: 10px; -webkit-transform: translateZ(0); transform: translateZ(0); }
+    .category-info { padding: 15px 10px; }
+    .category-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
+    .category-info p { font-size: 0.8rem; margin-bottom: 10px; }
+    .btn { padding: 8px 12px; font-size: 0.8rem; }
+
+    .photo-grid { 
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+      gap: 20px;
+      padding: 20px 15px 100px 15px;
+    }
+    .photo-item { border-radius: 10px; }
+    .photo-img-wrapper { height: 300px; }
+  }
+  
+  @media (max-width: 420px) {
+    .logo-main { font-size: 1.9rem; }
+    .logo-sub { font-size: 1.5rem; }
+    .tagline { font-size: 0.85rem; }
+    .tagline strong { font-size: 0.95rem; }
+  }
+
+  .loader-container { text-align: center; padding: 80px 20px; grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .spinner { width: 50px; height: 50px; border: 3px solid rgba(232, 197, 71, 0.2); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text { color: var(--text-header); font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem; letter-spacing: 1px; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+
+  .view { display: none; opacity: 0; transition: opacity 0.4s ease; }
+  .view.active { display: block; opacity: 1; animation: fadeIn 0.5s ease forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .categories-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: 30px; 
+    max-width: 1000px; 
+    margin: 0 auto; 
+    padding: 20px; 
+  }
+  
+  .category-card { 
+    background: var(--card-bg-red); 
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 30px rgba(232, 197, 71, 0.04);
+    border: 1px solid rgba(232, 197, 71, 0.2);
+    display: flex; 
+    flex-direction: column; 
+    text-align: center; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; 
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    cursor: pointer; 
+  }
+  .category-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 15px 45px rgba(0,0,0,0.7), 0 0 40px rgba(232, 197, 71, 0.15), inset 0 0 40px rgba(232, 197, 71, 0.08);
+    border-color: rgba(232, 197, 71, 0.5);
+  }
+  
+  .category-cover { 
+    width: 100%; 
+    aspect-ratio: 1 / 1; 
+    background: var(--img-bg-panna); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    position: relative; 
+    border-bottom: 1px solid rgba(232, 197, 71, 0.15);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .category-cover img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    object-position: center;
+    display: block;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .category-cover .no-image { font-size: 3rem; color: #8a7a6a; }
+  
+  .category-info { padding: 20px 15px; flex-grow: 1; display: flex; flex-direction: column; }
+  
+  .category-info h3 { 
+    font-size: 1.3rem; 
+    margin-bottom: 8px; 
+    color: var(--text-header); 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+  
+  .category-info p { 
+    font-size: 0.85rem; 
+    color: var(--text-intro); 
+    margin-bottom: 15px; 
+    flex-grow: 1; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    opacity: 0.9;
+  }
+  
+  .btn { 
+    display: inline-block; 
+    padding: 10px 20px; 
+    border-radius: 30px; 
+    text-decoration: none; 
+    font-size: 0.85rem; 
+    font-weight: 500; 
+    transition: all 0.3s ease; 
+    cursor: pointer; 
+    border: none; 
+    pointer-events: none; 
+  }
+  
+  .btn-primary { 
+    background: linear-gradient(135deg, #e8c547 0%, #d4af37 100%);
+    color: #3a1a0a;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(232, 197, 71, 0.3);
+    letter-spacing: 0.5px;
+  }
+  
+  .btn-whatsapp { 
+    background: #25D366; 
+    color: #fff; 
+    font-size: 0.85rem; 
+    padding: 10px 15px;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  }
+  .btn-whatsapp:hover { 
+    background: #1ebe5a;
+    box-shadow: 0 6px 18px rgba(37, 211, 102, 0.5);
+  }
+  
+  .btn-email { 
+    background: rgba(255,255,255,0.08);
+    color: var(--text-header);
+    border: 1px solid rgba(232, 197, 71, 0.35);
+    font-size: 0.85rem; 
+    padding: 10px 15px; 
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .btn-email:hover { 
+    background: rgba(232, 197, 71, 0.15);
+    border-color: var(--accent-gold);
+  }
+
+  .category-header { 
+    text-align: center; 
+    padding: 20px; 
+    background: rgba(45, 10, 10, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(232, 197, 71, 0.25);
+    position: sticky; 
+    top: 0; 
+    z-index: 10; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .mini-logo { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 1.2rem; 
+    font-weight: 700; 
+    color: var(--text-header); 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .mini-logo span { 
+    color: var(--accent-gold); 
+    font-style: italic; 
+    font-weight: 400; 
+    text-transform: none;
+    text-shadow: 0 0 12px rgba(232, 197, 71, 0.5);
+  }
+  
+  .back-btn { 
+    background: rgba(232, 197, 71, 0.15);
+    border: 1px solid rgba(232, 197, 71, 0.4);
+    color: var(--accent-gold); 
+    font-family: 'Montserrat', sans-serif; 
+    font-size: 0.9rem; 
+    cursor: pointer; 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-weight: 500; 
+    transition: all 0.3s;
+    padding: 8px 16px;
+    border-radius: 20px;
+  }
+  .back-btn:hover { 
+    background: rgba(232, 197, 71, 0.25);
+    border-color: var(--accent-gold);
+    color: #fff;
+  }
+  
+  .category-header h2 { 
+    font-size: 1.8rem; 
+    width: 100%; 
+    order: -1; 
+    margin-bottom: 10px; 
+    color: var(--text-header);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  }
+
+  .photo-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); 
+    gap: 30px; 
+    max-width: 1200px; 
+    margin: 40px auto; 
+    padding: 0 20px 140px 20px;
+  }
+  
+  .photo-item { 
+    background: var(--card-bg-red);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(232, 197, 71, 0.2);
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 30px rgba(232, 197, 71, 0.04);
+    display: flex; 
+    flex-direction: column; 
+    animation: fadeIn 0.5s ease forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  .photo-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 30px rgba(232, 197, 71, 0.12), inset 0 0 30px rgba(232, 197, 71, 0.06);
+    border-color: rgba(232, 197, 71, 0.4);
+  }
+  
+  .photo-img-wrapper {
+    background: var(--img-bg-panna);
+    border-bottom: 1px solid rgba(232, 197, 71, 0.15);
+    height: 380px;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .photo-img-wrapper img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    object-position: center;
+    display: block; 
+    cursor: pointer; 
+    transition: opacity 0.2s;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  .photo-img-wrapper img:hover { opacity: 0.9; }
+
+  .item-actions { 
+    padding: 15px; 
+    display: flex; 
+    gap: 10px; 
+    flex-direction: column; 
+    background: transparent;
+  }
+
+  .lightbox-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(10, 3, 3, 0.97); z-index: 1000; display: none; opacity: 0;
+    transition: opacity 0.3s ease; align-items: center; justify-content: center;
+  }
+  .lightbox-overlay.active { display: flex; opacity: 1; }
+  .lightbox-content { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .lightbox-image { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 4px; box-shadow: 0 10px 60px rgba(0,0,0,0.9); animation: expandImage 0.3s ease; }
+  @keyframes expandImage { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .lightbox-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); border: none; color: #fff; width: 45px; height: 45px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s; z-index: 1010; }
+  .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+  .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: #fff; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s; z-index: 1010; }
+  .lightbox-nav:hover { background: rgba(255,255,255,0.3); }
+  .lightbox-prev { left: 15px; }
+  .lightbox-next { right: 15px; }
+
+  @media (max-width: 600px) {
+    .lightbox-nav { width: 40px; height: 40px; font-size: 1.2rem; }
+    .lightbox-prev { left: 5px; }
+    .lightbox-next { right: 5px; }
+    .lightbox-close { top: 10px; right: 10px; width: 40px; height: 40px; font-size: 1.5rem; }
+    .category-header h2 { font-size: 1.4rem; }
+  }
+
+  @media print {
+    .back-btn, .btn, .lightbox-overlay, #snow-canvas, .snow-pile { display: none !important; }
+    body, body::before { background: #fff !important; }
+    .view { display: block !important; opacity: 1 !important; }
+    .category-header { position: static; box-shadow: none; border: none; padding: 20px; background: #fff !important; backdrop-filter: none !important; }
+    .category-header h2, .mini-logo, .mini-logo span { color: #3a3028 !important; text-shadow: none !important; }
+    .photo-grid { display: block; padding-bottom: 20px; }
+    .photo-item { page-break-inside: avoid; margin-bottom: 20px; box-shadow: none; border: 1px solid #eee; background: #fff !important; backdrop-filter: none !important; }
+    .category-card { page-break-inside: avoid; margin-bottom: 30px; box-shadow: none; border: 1px solid #eee; background: #fff !important; backdrop-filter: none !important; }
+    .category-info h3, .category-info p { color: #3a3028 !important; text-shadow: none !important; }
+    .logo-main, .logo-sub, .tagline, .intro { color: #3a3028 !important; text-shadow: none !important; }
+    .logo-container, .intro { background: none !important; backdrop-filter: none !important; border: none !important; box-shadow: none !important; }
+    .item-actions { border-top: 1px solid #eee !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="snow-canvas"></canvas>
+
+<div class="snow-pile snow-pile-left"></div>
+<div class="snow-pile snow-pile-right"></div>
+
+<div id="home-view" class="view active">
+  <header>
+    <div class="logo-container">
+      
+      <!-- LOGO SINISTRA -->
+      <div class="header-logo-container">
+        <img src="Testata_Gruppo.jpeg" alt="Testata Gruppo">
+      </div>
+
+      <!-- LOGO DESTRA -->
+      <div class="header-logo-container-right">
+        <img src="Testata_Profilo.jpeg" alt="Testata Profilo">
+      </div>
+      
+      <div class="logo-main">Guerriero</div>
+      <div class="logo-sub">Creations</div>
+      <div class="logo-divider"></div>
+      <p class="tagline">
+        fatte a mano con amore<br>
+        da<br>
+        <strong>Anna Maria Guerriero</strong>
+      </p>
+    </div>
+  </header>
+  <div class="intro">
+    <p>Benvenuti nel mio piccolo mondo fatto di fili, nastri, perline e carta. Ogni creazione nasce dal tempo, dalla pazienza e dalla gioia di creare qualcosa di unico. Scegli una collezione per scoprire tutti i pezzi disponibili.</p>
+  </div>
+  <div class="categories-grid" id="home-grid"></div>
+</div>
+
+<div id="category-view" class="view">
+  <div class="category-header">
+    <button class="back-btn" onclick="showHome()">⬅ Indietro</button>
+    <div class="mini-logo">Guerriero <span>Creations</span></div>
+    <h2 id="current-cat-title">Titolo Categoria</h2>
+  </div>
+  <div class="photo-grid" id="category-grid"></div>
+</div>
+
+<div class="lightbox-overlay" id="lightbox">
+  <div class="lightbox-content">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">❮</button>
+    <button class="lightbox-nav lightbox-next" onclick="changeImage(1)">❯</button>
+    <img class="lightbox-image" id="lightbox-img" src="" alt="Foto ingrandita">
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('snow-canvas');
+const ctx = canvas.getContext('2d');
+
+let snowflakes = [];
+let canvasWidth = 0;
+let canvasHeight = 0;
+let snowActive = false;
+let snowAnimationId = null;
+let snowStartTime = 0;
+let textWalls = [];
+
+const MOBILE_BREAKPOINT = 768;
+const MIX_DURATION = 15000; 
+const pelletSprites = []; 
+
+// --- NEVE REALISTICA (PALLINE DEFORMI) ---
+function prerenderPellets() {
+    const sizes = [1.5, 2.5, 3.5, 4.5, 6];
+    sizes.forEach(s => {
+        const pad = 4;
+        const c = document.createElement('canvas');
+        c.width = s * 2 + pad * 2;
+        c.height = s * 2 + pad * 2;
+        const g = c.getContext('2d');
+        const cx = c.width / 2;
+        const cy = c.height / 2;
+
+        g.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        g.beginPath();
+        g.arc(cx, cy, s, 0, Math.PI * 2);
+        g.arc(cx - s*0.3, cy + s*0.4, s*0.7, 0, Math.PI * 2);
+        g.arc(cx + s*0.4, cy - s*0.2, s*0.8, 0, Math.PI * 2);
+        g.fill();
+
+        g.shadowBlur = 4;
+        g.shadowColor = 'rgba(255, 255, 255, 0.8)';
+        g.fill();
+
+        pelletSprites.push({ canvas: c, radius: s });
+    });
+}
+
+const config = { maxFlakes: 120, minSpeed: 0.5, maxSpeed: 1.8, wind: 0.4 };
+let mixProgress = 0;
+
+function updateTextWalls() {
+    textWalls = [];
+    if (window.innerWidth < MOBILE_BREAKPOINT) return;
+    if (!document.getElementById('home-view').classList.contains('active')) return;
+    const elements = document.querySelectorAll('.logo-container, .intro');
+    elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        textWalls.push({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom });
+    });
+}
+
+window.addEventListener('scroll', updateTextWalls);
+window.addEventListener('resize', () => {
+    if (!snowActive) return;
+    canvasWidth = canvas.width = window.innerWidth;
+    canvasHeight = canvas.height = window.innerHeight;
+    updateTextWalls();
+});
+
+function updateMixProgress(now) {
+    if (!snowStartTime) snowStartTime = now;
+    mixProgress = Math.min((now - snowStartTime) / MIX_DURATION, 1);
+}
+
+function initSnow() {
+    canvasWidth = canvas.width = window.innerWidth;
+    canvasHeight = canvas.height = window.innerHeight;
+    const numFlakes = window.innerWidth < 600 ? Math.floor(config.maxFlakes * 0.6) : config.maxFlakes;
+    snowflakes = [];
+    for (let i = 0; i < numFlakes; i++) {
+        snowflakes.push(createFlake());
+    }
+}
+
+function createFlake() {
+    const sprite = pelletSprites[Math.floor(Math.random() * pelletSprites.length)];
+    return {
+        x: Math.random() * canvasWidth,
+        y: Math.random() * canvasHeight - canvasHeight, 
+        sprite: sprite,
+        speedY: Math.random() * (config.maxSpeed - config.minSpeed) + config.minSpeed,
+        speedX: Math.random() * 0.6 - 0.3,
+        opacity: Math.random() * 0.4 + 0.6,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: Math.random() * 0.01 + 0.01,
+        avoiding: false,
+        landed: false,
+        landTimer: 0
+    };
+}
+
+function respawnFlake(flake) {
+    flake.y = -30;
+    flake.x = Math.random() * canvasWidth;
+    flake.wobble = Math.random() * Math.PI * 2;
+    flake.avoiding = false;
+    flake.landed = false;
+    flake.landTimer = 0;
+    flake.opacity = Math.random() * 0.4 + 0.6;
+}
+
+function drawSnow(now) {
+    if (!snowActive) return;
+    updateMixProgress(now);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    
+    snowflakes.forEach(flake => {
+        if (flake.landed) {
+            flake.landTimer++;
+            ctx.globalAlpha = flake.opacity * (1 - flake.landTimer / 60); 
+            
+            ctx.drawImage(
+                flake.sprite.canvas,
+                flake.x - flake.sprite.canvas.width / 2,
+                flake.y - flake.sprite.canvas.height / 2
+            );
+            
+            if (flake.landTimer >= 60) {
+                respawnFlake(flake);
+            }
+            return; 
+        }
+
+        flake.wobble += flake.wobbleSpeed;
+        flake.y += flake.speedY;
+        flake.x += Math.sin(flake.wobble) * config.wind + flake.speedX;
+        
+        if (textWalls.length > 0 && !flake.avoiding && window.innerWidth >= MOBILE_BREAKPOINT) {
+            for (let i = 0; i < textWalls.length; i++) {
+                const wall = textWalls[i];
+                const pad = 10;
+                if (flake.x > wall.left - pad && flake.x < wall.right + pad &&
+                    flake.y > wall.top - pad && flake.y < wall.bottom + pad) {
+                    const dl = Math.abs(flake.x - (wall.left - pad));
+                    const dr = Math.abs(flake.x - (wall.right + pad));
+                    const dt = Math.abs(flake.y - (wall.top - pad));
+                    const db = Math.abs(flake.y - (wall.bottom + pad));
+                    const min = Math.min(dl, dr, dt, db);
+                    if (min === dl) { flake.x = wall.left - pad; flake.speedX = -Math.abs(flake.speedX || 0.5) - 0.3; } 
+                    else if (min === dr) { flake.x = wall.right + pad; flake.speedX = Math.abs(flake.speedX || 0.5) + 0.3; } 
+                    else if (min === dt) { flake.y = wall.top - pad; flake.speedX = (flake.x < (wall.left + wall.right) / 2) ? -1.5 : 1.5; } 
+                    else { flake.y = wall.bottom + pad; }
+                    flake.avoiding = true;
+                    setTimeout(() => { flake.avoiding = false; }, 500);
+                    break;
+                }
+            }
+        }
+
+        ctx.globalAlpha = flake.opacity;
+        ctx.drawImage(
+            flake.sprite.canvas,
+            flake.x - flake.sprite.canvas.width / 2,
+            flake.y - flake.sprite.canvas.height / 2
+        );
+        ctx.globalAlpha = 1;
+        
+        if (flake.y > canvasHeight - 20) {
+            flake.landed = true;
+            flake.y = canvasHeight - 20; 
+        }
+
+        if (flake.x > canvasWidth + 30) flake.x = -30;
+        if (flake.x < -30) flake.x = canvasWidth + 30;
+    });
+    
+    snowAnimationId = requestAnimationFrame(drawSnow);
+}
+
+function startSnow() {
+    if (snowActive) return;
+    snowActive = true;
+    canvas.style.display = 'block';
+    snowStartTime = 0;
+    initSnow();
+    snowAnimationId = requestAnimationFrame(drawSnow);
+    setTimeout(updateTextWalls, 100);
+}
+
+function stopSnow() {
+    snowActive = false;
+    canvas.style.display = 'none';
+    if (snowAnimationId) {
+        cancelAnimationFrame(snowAnimationId);
+        snowAnimationId = null;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+prerenderPellets();
+
+const categorie = [
+    { id: "alberelli", titolo: "Alberelli", descrizione: "Dalle spirali soffici e colorate ai piccoli alberi in pannolenci. Ogni alberello è un piccolo capolavoro di pazienza.", icona: "🎄" },
+    { id: "angeli", titolo: "Angeli e Campanelle", descrizione: "Piccoli angeli custodi realizzati con fili colorati, nastri glitterati e perline. Perfetti per il vostro albero o per portare un po' di luce in casa.", icona: "🕊️" },
+    { id: "confettate", titolo: "Confettate e Sacchetti", descrizione: "Elegantissimi sacchetti in raso e decorazioni per confetti, impreziositi da rose di stoffa, nastri e piccoli cuori. Ideali per battesimi e matrimoni.", icona: "🎁" },
+    { id: "croce", titolo: "La Croce di Mollette", descrizione: "Un pezzo davvero unico. Una croce realizzata interamente incastrando pazientemente delle mollette di legno, montata su una elegante base scura.", icona: "🪵" },
+    { id: "addobbi", titolo: "Addobbi Albero", descrizione: "Splendidi addobbi per rendere il tuo albero di Natale ancora più magico e scintillante.", icona: "🎈" }
+];
+
+let currentImages = []; 
+let currentIndex = 0;
+let touchStartX = 0; 
+
+// --- LOGICA DI RICERCA INFALLIBILE ---
+function getBaseNames(id, title) {
+    const bases = new Set();
+    
+    // ID e sue varianti
+    bases.add(id.toLowerCase());
+    bases.add(id);
+    bases.add(id.charAt(0).toUpperCase() + id.slice(1).toLowerCase());
+    
+    // Titolo e sue varianti
+    const cleanTitle = title.toLowerCase().trim();
+    bases.add(cleanTitle);
+    bases.add(cleanTitle.replace(/\s+/g, '_'));
+    bases.add(cleanTitle.replace(/\s+/g, ''));
+    
+    const capTitle = title.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    bases.add(capTitle);
+    bases.add(capTitle.replace(/\s+/g, '_'));
+    bases.add(capTitle.replace(/\s+/g, ''));
+
+    const firstCap = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
+    bases.add(firstCap);
+    bases.add(firstCap.replace(/\s+/g, '_'));
+
+    if (id === 'addobbi') {
+        bases.add('Addobbi albero');
+        bases.add('Addobbi Albero');
+        bases.add('addobbi albero');
+        bases.add('Addobbi_albero');
+        bases.add('Addobbi_Albero');
+    }
+
+    return Array.from(bases);
+}
+
+async function findImage(bases, index = null) {
+    // AGGIUNTE TUTTE LE ESTENSIONI COMUNI
+    const exts = ['.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG', '.webp', '.jfif', '.JFIF', '.WEBP'];
+    
+    for (let base of bases) {
+        if (index === null) {
+            for (let ext of exts) {
+                if (await checkImage(base + ext)) return base + ext;
+            }
+        } else {
+            // AGGIUNTE TUTTE LE VARIANTI DI SPAZIATURA
+            const variants = [
+                `${base}${index}`, 
+                `${base} (${index})`, 
+                `${base}(${index})`,
+                `${base}_${index}`,
+                `${base}-${index}`,
+                `${base} ${index}`,
+                `${base}  ${index}`, // doppio spazio
+                `${base}${index} `, // spazio finale
+                `${base} (${index}) ` // spazio prima dell'estensione
+            ];
+            for (let v of variants) {
+                for (let ext of exts) {
+                    if (await checkImage(v + ext)) return v + ext;
+                }
+            }
+        }
+    }
+    return null;
+}
+
+async function getCoverImage(catId, catTitle) {
+    const bases = getBaseNames(catId, catTitle);
+    let img = await findImage(bases, null);
+    if (img) return img;
+    return await findImage(bases, 1); // Fallback sulla prima immagine
+}
+
+async function getAllImages(catId, catTitle) {
+    const foundImages = [];
+    const bases = getBaseNames(catId, catTitle);
+    
+    // Aggiunge subito la copertina (senza numero) se esiste
+    const cover = await findImage(bases, null);
+    if (cover && !foundImages.includes(cover)) foundImages.push(cover);
+
+    const MAX_IMAGES = 150; 
+    const MAX_CONSECUTIVE_MISSES = 15; 
+    let consecutiveMisses = 0;
+
+    for (let i = 1; i <= MAX_IMAGES; i++) {
+        const img = await findImage(bases, i);
+        if (img) {
+            if (!foundImages.includes(img)) {
+                foundImages.push(img);
+            }
+            consecutiveMisses = 0; 
+        } else {
+            consecutiveMisses++;
+            if (consecutiveMisses >= MAX_CONSECUTIVE_MISSES) {
+                break;
+            }
+        }
+    }
+    return foundImages;
+}
+
+function checkImage(src) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => {
+            // Stampa in console i file non trovati per debug
+            console.log("Non trovata:", src);
+            resolve(false);
+        };
+        // Codifica il percorso per gestire spazi e caratteri speciali
+        img.src = encodeURI(src);
+    });
+}
+
+async function loadHome() {
+    const container = document.getElementById('home-grid');
+    container.innerHTML = `<div class="loader-container"><div class="spinner"></div><div class="loader-text">Prepariamo le collezioni...</div></div>`;
+
+    let allCardsHTML = '';
+    for (let cat of categorie) {
+        const coverImage = await getCoverImage(cat.id, cat.titolo);
+        let imgHTML = `<div class="no-image">${cat.icona}</div>`;
+        if (coverImage) imgHTML = `<img src="${coverImage}" alt="${cat.titolo}" loading="lazy">`;
+        
+        allCardsHTML += `
+        <div class="category-card" onclick="openCategory('${cat.id}', '${cat.titolo}')">
+            <div class="category-cover">${imgHTML}</div>
+            <div class="category-info">
+                <h3>${cat.icona} ${cat.titolo}</h3>
+                <p>${cat.descrizione}</p>
+                <button class="btn btn-primary">Esplora la collezione</button>
+            </div>
+        </div>`;
+    }
+    container.innerHTML = allCardsHTML;
+}
+
+async function openCategory(catId, catTitle) {
+    stopSnow();
+    document.body.classList.add('in-category');
+    
+    document.getElementById('home-view').classList.remove('active');
+    document.getElementById('category-view').classList.add('active');
+    document.getElementById('current-cat-title').innerText = catTitle;
+    window.scrollTo(0, 0);
+
+    const grid = document.getElementById('category-grid');
+    grid.innerHTML = `<div class="loader-container" style="grid-column: 1 / -1;"><div class="spinner"></div><div class="loader-text">Caricamento creazioni...</div></div>`;
+
+    const images = await getAllImages(catId, catTitle);
+    
+    // Sposta la copertina in cima
+    const coverImage = await getCoverImage(catId, catTitle);
+    if (coverImage) {
+        const index = images.indexOf(coverImage);
+        if (index > -1) {
+            images.splice(index, 1);
+        }
+        images.unshift(coverImage);
+    }
+
+    currentImages = images; 
+    grid.innerHTML = '';
+
+    if (images.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; width:100%; color:#f5e6d3;">Nessuna foto trovata per questa categoria.</p>';
+        return;
+    }
+
+    images.forEach((imgSrc, index) => {
+        setTimeout(() => {
+            const photoHTML = `
+            <div class="photo-item" style="animation-delay: ${index * 0.1}s">
+                <div class="photo-img-wrapper">
+                    <img src="${imgSrc}" alt="Foto ${catTitle}" loading="lazy" onclick="openLightbox(${index})">
+                </div>
+                <div class="item-actions">
+                    <a class="btn btn-whatsapp" href="https://wa.me/393534122570?text=Ciao!%20Ho%20visto%20la%20vostra%20creazione%20(${encodeURIComponent(catTitle)})%20e%20vorrei%20maggiori%20informazioni." target="_blank">Chiedi info su WhatsApp</a>
+                    <a class="btn btn-email" href="mailto:am.guerriero74@gmail.com?subject=Richiesta%20info%20${encodeURIComponent(catTitle)}">Richiedi via Email</a>
+                </div>
+            </div>`;
+            grid.innerHTML += photoHTML;
+        }, index * 50);
+    });
+}
+
+function openLightbox(index) {
+    currentIndex = index;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden'; 
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = ''; 
+}
+
+function changeImage(direction) {
+    currentIndex += direction;
+    if (currentIndex >= currentImages.length) currentIndex = 0;
+    if (currentIndex < 0) currentIndex = currentImages.length - 1;
+    updateLightbox();
+}
+
+function updateLightbox() {
+    const imgEl = document.getElementById('lightbox-img');
+    imgEl.src = currentImages[currentIndex];
+}
+
+document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('lightbox').classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') changeImage(1);
+    if (e.key === 'ArrowLeft') changeImage(-1);
+});
+
+const lightboxEl = document.getElementById('lightbox');
+lightboxEl.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+lightboxEl.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+    if (Math.abs(diff) > 50) {
+        if (diff > 0) changeImage(-1); else changeImage(1);
+    }
+});
+
+lightboxEl.addEventListener('click', (e) => {
+    if (e.target === lightboxEl) closeLightbox();
+});
+
+function showHome() {
+    document.body.classList.remove('in-category');
+    document.getElementById('category-view').classList.remove('active');
+    document.getElementById('home-view').classList.add('active');
+    window.scrollTo(0, 0);
+    startSnow();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadHome();
+    startSnow();
+});
+</script>
+
+</body>
+</html>
